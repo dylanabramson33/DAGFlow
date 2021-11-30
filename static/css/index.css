@@ -1,0 +1,93 @@
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+    font-family: helvetica neue, helvetica, liberation sans, arial, sans-serif;
+    font-size: 14px;
+    background-color: lightgray;
+    padding: 0;
+    margin: 0;
+    z-index: -1;
+  }
+
+  #cy {
+    position: absolute;
+    left: 150;
+    top: 0;
+    bottom: 20;
+    right: 0;
+    z-index: 10;
+    background-color: lightgray;
+
+  }
+
+  #sideBar {
+    background-color: rgb(30,37,42);
+    height: 100%;
+    width: 150px;
+    
+  }
+
+  #sideBar h1 {
+    font-size: 1em;
+    padding: 10px;
+    letter-spacing: .1rem;
+    color: white;
+    font-family: 'Futura';
+  }
+  #sideBar h2 {
+    font-size: 0.75em;
+    padding: 10px;
+    letter-spacing: .1rem;
+    color: white;
+    font-family: 'Futura';
+  }
+
+  #newNode {
+    width: 100%;
+  }
+  #sideBar td {
+    width: 100%;
+  }
+  #nodeDesc {
+    position: absolute;
+    width: 200px;
+    min-height:0px;
+    /* max-height: 400px; */
+    top: 10px;
+    right: 10px;
+    background-color: white;
+    opacity: 0.9;
+    border-color: gray;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    z-index: 20;
+    padding: 20px;
+  }
+
+  #nodeDesc label{
+    font-family: 'Futura';;
+  }
+
+  #node {
+    color: blue;
+  }
+
+  #sideBar input {
+    width: 149px;
+    padding: 0px;
+    margin: 0px;
+    color: white;
+    /* letter-spacing: .1rem; */
+    background-color: transparent;
+    border-color: transparent;
+
+    background-color: transparent;
+    font-family: 'Futura';
+    cursor:pointer;
+  }
+
+
