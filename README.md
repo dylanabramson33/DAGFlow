@@ -10,7 +10,7 @@ I noticed myself creating lots of duplicated functionality across many ML projec
 The core object in DAGFlow is the "flow"'. A flow defines a sequence of transformations of data through "Nodes". Below is an example flow that takes an input dataframe with a SMILES field (a string representation of molecule) and adds a column containing the bond adjacency matrix of the molecule:
 ```python
 from Flows import createflow
-From Node import nodify
+from Node import nodify
 from rdkit import Chem
 import pandas as pd
 
