@@ -45,6 +45,6 @@ output = test_flow.run()
 No DAG library is complete without a slick GUI. DAGFlow includes DAGWeb, a flask app for creating DAG's with a drag and drop UI. Here is the same flow as above represented in the GUI.    
 <img width="600" alt="Screen Shot 2022-01-08 at 2 19 58 PM" src="https://user-images.githubusercontent.com/34826285/148656940-e75d99ea-33c8-4997-b20a-ef7b6e160410.png">
 
-The GUI contains a basic type checker (right now type annotations must be included but this will be optional in future), ensuring only nodes of compatible types can be linked together.  
+The GUI contains a basic type checker (right now type annotations must be included but this will be optional in future), ensuring only nodes of compatible types can be linked together. 
 
 
