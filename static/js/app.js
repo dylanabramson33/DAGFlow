@@ -1,5 +1,9 @@
-import AttributeEditor from './components/AttributeEditor.js'
-import store from './index.js';
+import defaults from './NodeDefaults.js';
+import nodeManager from './NodeManager.js';
+
+function checkCanConnect(outputParamTypes,inputParamTypes){
+  return inputParamTypes.includes(outputParamTypes[0]);
+}
 
 var drawModeEnabled = false;
 document.addEventListener('DOMContentLoaded', function(){
@@ -103,8 +107,16 @@ document.addEventListener('DOMContentLoaded', function(){
       snapThreshold: 50, // the target node must be less than or equal to this many pixels away from the cursor/finger
       snapFrequency: 15,
       canConnect: function( sourceNode, targetNode ){
+        if(targetNode.data() == undefined){
+          return false;
+        }
         
-        return  sourceNode.edgesWith(targetNode).length == 0 && sourceNode != targetNode; // e.g. disallow loops
+        const outputTypes = nodeManager.getOutputTypes(sourceNode.data().id);
+        const inputTypes = nodeManager.getInputTypes(targetNode.data().id);
+        let typesMatch = inputTypes.includes(outputTypes);
+        return sourceNode.edgesWith(targetNode).length == 0 && 
+        sourceNode != targetNode && 
+        typesMatch;
       },
       
     });
@@ -135,20 +147,61 @@ document.addEventListener('DOMContentLoaded', function(){
   
   cy.on('tap', function(event) {
     var evtTargetData = event.target.data();
-    if(evtTargetData != undefined && evtTargetData.hasOwnProperty("name")){
-      store.dispatch("changeNode",{id : evtTargetData.id, name : evtTargetData.name});
+    if(evtTargetData.hasOwnProperty('id')){
+      nodeManager.changeCurrent(evtTargetData.id,evtTargetData.name);
     }
+
   });
+
+  var idGen = 0;
+  function addNode(event){
+    const nodeType = event.target.value;
+    const nodeObj = { group: 'nodes',
+      data: { id: idGen, name: nodeType},
+      position: { x: 200, y: 200 },
+    }
+    cy.add(nodeObj);
+    nodeManager.changeCurrent(idGen,nodeType);
+    idGen += 1;
+  }
+
+  cy.on('add','edge',function(edge) {
+    let sourceID = edge.target.data().source;
+    let targetID = edge.target.data().target;
+    if(isNaN(sourceID) || isNaN(targetID)){
+      return;
+    }
+    sourceID = parseInt(sourceID);
+    targetID = parseInt(targetID);
+
+    const outputType = nodeManager.getOutputTypes(sourceID);
+    nodeManager.setInputTypeToVal(targetID,outputType,sourceID);
+  });
+  cy.on('remove','edge',function(edge) {
+    let sourceID = edge.target.data().source;
+    let targetID = edge.target.data().target;
+
+    if(isNaN(sourceID) | isNaN(targetID)){
+      return;
+    }
+    sourceID = parseInt(sourceID);
+    targetID = parseInt(targetID);
+    const outputType = nodeManager.getOutputTypes(sourceID);
+    nodeManager.setInputTypeToVal(targetID,outputType,'');
+  });
+  document.querySelectorAll('.sideButton').forEach(item => {
+    item.addEventListener('click',addNode);
+  });
+
+  
 
 });
 
 document.addEventListener('addDefaults', function (e) {  
-  store.dispatch("addDefaults",e.detail)
+  defaults.addDefaults(e.detail);
 }, false);
 
 
-const statusInstance = new AttributeEditor();
-statusInstance.render();
 
 
 

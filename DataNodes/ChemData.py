@@ -4,7 +4,6 @@ import numpy as np
 import torch
 from torch_geometric.data import Data
 from torch_geometric.data import DataLoader
-import deepchem as dc
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from inspect import getfullargspec
@@ -262,3 +261,16 @@ registry = [ChemCSVReader,
             GetMoleculeGraph,
             convertToTorchGNNLoader,
             testOr]
+
+# @createpipeline
+# def pipe():
+#     df = ChemCSVReader('./solubility_data.csv')
+#     df1 = ChemAddMol(df)
+#     df2 = GetMoleculeGraph(df1)
+#     df3,df4 = testOr(df,df2)
+#     return df3
+
+# pipe.compile()
+# val = pipe.run()
+
+# print(val)

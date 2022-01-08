@@ -16,6 +16,8 @@
       <h1>Hello</h1>
  
     </div>
+  
+    <button id='submit'>Compile </button>
     <div id="cy"></div>
       <div id='sideBar'>
         <h1>DAGFlow</h1>
@@ -23,7 +25,7 @@
           <table>
           {%for i in range(0, len)%}
           <tr id = "newNode">
-              <td><input type="button" value="{{nodes[i]}}" onclick="addNode(this.value)"/></td>
+              <td><input type="button" value="{{nodes[i]}}" class="sideButton"/></td>
           </tr>
           {%endfor%}
           </table>
@@ -36,6 +38,7 @@
       });
     </script>
     <script type='module' src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script type='module' src="{{ url_for('static', filename='js/Compiler.js') }}"></script>
   </body>
 
 </html>
