@@ -1,7 +1,7 @@
 import inspect
 from flask import Flask
 from flask import render_template
-from DataNodes import ChemData
+from src import ChemData
 from inspect import isclass
 
 app = Flask('app')
