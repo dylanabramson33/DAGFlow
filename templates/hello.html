@@ -1,44 +1,76 @@
 <html>
-
   <head>
     <title>cytoscape-edgehandles.js snapping demo</title>
-
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.3/af-2.3.7/b-2.1.1/cr-1.5.5/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.3/af-2.3.7/b-2.1.1/cr-1.5.5/datatables.min.js"></script> 
     <script src="{{ url_for('static', filename='js/node_modules/cytoscape/dist/cytoscape.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/node_modules/lodash/lodash.js') }}"></script>
     <script src="{{ url_for('static', filename='js/node_modules/cytoscape-edgehandles/cytoscape-edgehandles.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" />
 
   </head>
-  
   <body>
-    <div id='nodeDesc'>
-      <h1>Hello</h1>
- 
+    <div id='appNav'>
+      <h1 class='topBar'>DAGFlow</h1>
+      <button id='graphButton' class='topBar'>Graph View</button>
+      <button id='dataButton' class='topBar'>Data View</button>
     </div>
-  
-    <button id='submit'>Compile </button>
-    <div id="cy"></div>
-      <div id='sideBar'>
-        <h1>DAGFlow</h1>
-        <h2>Add Node</h2>
-          <table>
-          {%for i in range(0, len)%}
-          <tr id = "newNode">
-              <td><input type="button" value="{{nodes[i]}}" class="sideButton"/></td>
-          </tr>
-          {%endfor%}
-          </table>
+    <div id='appBody'>
+      <div id='graphView'>
+        <div id='nodeDesc'>
+          <h1>Hello</h1>
+        </div>
+        
+        <button id='submit'> Compile </button>
+        <div class='resizable' id="editor"></div>
+        <script src="{{ url_for('static', filename='js/src2/ace.js') }}" type="text/javascript" charset="utf-8"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.session.setMode("ace/mode/python");
+            editor.setShowPrintMargin(false);
+        </script>
+        </div>
+        <div id="cy"></div>
+          <div id='sideBar'>
+            <h2>Add Node</h2>
+              <table>
+              {%for i in range(0, len)%}
+              <tr id = "newNode">
+                  <td><input type="button" value="{{nodes[i]}}" class="sideButton"/></td>
+              </tr>
+              {%endfor%}
+              <tr>
+                <td><input type="button" value='Create Node' id="addNode"/></td>
+              </tr>
+              </table>
+          </div>
+        <script src="{{ url_for('static', filename='js/canvas.js') }}"></script>
+        <script> 
+          document.addEventListener('DOMContentLoaded', function(){
+            var defaultAttrs = {{node_attrs|tojson}};
+            addDefaults(defaultAttrs);
+          });
+        </script>
+        <script> 
+          document.addEventListener('DOMContentLoaded', function(){
+            var funcToSource = {{function_to_source|tojson}};
+            addFunctionToSource(funcToSource);
+          });
+        </script>
+        <script src="{{ url_for('static', filename='js/resize.js') }}"></script>
+        <script type='module' src="{{ url_for('static', filename='js/app.js') }}"></script>
+        <script type='module' src="{{ url_for('static', filename='js/Compiler.js') }}"></script>
       </div>
-    <script src="{{ url_for('static', filename='js/canvas.js') }}"></script>
-    <script> 
-      document.addEventListener('DOMContentLoaded', function(){
-        var defaultAttrs = {{node_attrs|tojson}};
-        addDefaults(defaultAttrs);
-      });
-    </script>
-    <script type='module' src="{{ url_for('static', filename='js/app.js') }}"></script>
-    <script type='module' src="{{ url_for('static', filename='js/Compiler.js') }}"></script>
+      <div id='dataView'>
+        <div id='nodeContainer'>
+          <div id='nodeTable'></div>
+        </div>
+      </div>
+    </div>
   </body>
 
 </html>

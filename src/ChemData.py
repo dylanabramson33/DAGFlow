@@ -11,11 +11,20 @@ import inspect
 from dataclasses import dataclass
 from .Node import nodify
 
+import pandas as pd
+import pandas as pd
+import pandas as pd 
+import pandas as pd
+import pandas as pd
+import pandas as pd
+import pandas as pd
 @nodify(node_type='Source', fields={'SMILES' : 'SMILES'})
 def ChemCSVReader(inp : str) -> pd.DataFrame:
     df = pd.read_csv(inp)
     return df
 
+import pandas as pd
+import pandas as pd
 @nodify(requires=['SMILES'],adds=['MOLS'])
 def ChemAddMol(inp : pd.DataFrame) -> pd.DataFrame:
     inp['MOLS'] = inp['SMILES'].apply(Chem.MolFromSmiles)
@@ -88,9 +97,9 @@ def convertToTorchGNNLoader(inp : pd.DataFrame,
 def testOr(inp1 : pd.DataFrame,inp2: pd.DataFrame):
     return [inp1,inp2]
 
-registry = [ChemCSVReader,
-            ChemAddMol,
-            GetAtomFeatures,
-            GetMoleculeGraph,
-            convertToTorchGNNLoader,
-            testOr]
+
+import pandas as pd
+@nodify(requires=['MOLS'],adds=['NODE_FEATURES'])
+def GetAtomFeaturesy(inp : pd.DataFrame) -> pd.DataFrame:
+    inp['NODE_FEATURES'] = inp['MOLS'].apply(get_atom_features)
+    return inp

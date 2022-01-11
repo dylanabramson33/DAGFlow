@@ -1,24 +1,31 @@
 import Node from './Node.js';
 import nodeManager from './NodeManager.js';
+import {Defaults,FuncToSource} from './NodeDefaults.js';
+
 
 class Compiler {
     constructor(){
         this.sourceCode = ''
     }
-    addImports(){
-        this.sourceCode = this.sourceCode.concat('from ChemData import * \n \n');
-    }
     addPipelineBoilerplate(){  
-        this.sourceCode = this.sourceCode.concat(`@createpipeline \ndef pipeline():\n`);
-
+        this.sourceCode = this.sourceCode.concat(`@createflow \ndef pipeline():\n`);
+    }
+    compileNodeSource(nodeID){
+        const nodeType = nodeManager.nodeTypeDict[nodeID];
+        const nodeSource = FuncToSource.funcToSource[nodeType];
+        this.sourceCode = this.sourceCode.concat(`${nodeSource}\n`);
     }
     addFunctionCall(functionName,functionParameters,nodeID){
         let joinedParameters = functionParameters.join(",");
         this.sourceCode = this.sourceCode.concat(`\t node_${nodeID} = ${functionName}(${joinedParameters})\n`);
     }
+    addReturnCall(nodeID){
+        this.sourceCode = this.sourceCode.concat(`\t return node_${nodeID}\n`);
+    }
     addSetOutput(){
         this.sourceCode = this.sourceCode.concat(`pipeline.compile()\noutput = pipeline.run()`)
     }
+  
 }
 
 /**
@@ -70,6 +77,8 @@ function getRoots(adjDict){
  * traverse graph while compiling nodes using DFS
  */
 function compileGraphFromNode(adjDict,root,compiler){
+    
+
     let functionName = nodeManager.nodeTypeDict[root];
     let parameterObjs = nodeManager.nodeDict[root]
     parameterObjs = parameterObjs.slice(0,parameterObjs.length-1);
@@ -84,6 +93,9 @@ function compileGraphFromNode(adjDict,root,compiler){
         }
     }
     compiler.addFunctionCall(functionName,parameters,root);
+    if(adjDict[root].children.length == 0){
+        compiler.addReturnCall(root);
+    }
     
     for(let i = 0; i < adjDict[root].children.length;i++){
         compileGraphFromNode(adjDict,adjDict[root].children[i],compiler);
@@ -96,10 +108,28 @@ document.querySelector('#submit').addEventListener('click', function(){
     let edges = window.cy.filter('edge');
     const adjDict = buildGraph(edges);
     const roots = getRoots(adjDict);
-    compiler.addImports();
+    const nodes = Object.keys(adjDict);
+    nodes.map(nodeID => compiler.compileNodeSource(nodeID));
     compiler.addPipelineBoilerplate();
     compileGraphFromNode(adjDict,roots[0],compiler);
     compiler.addSetOutput();
-
-
+    console.log(compiler.sourceCode);
+    fetch('http://localhost:5501/send_graph', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            'source': compiler.sourceCode,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const container = document.getElementById('nodeTable');
+            const hot = new Handsontable(container, {
+            data: data,
+            rowHeaders: true,
+            colHeaders: true,
+            height: 'auto',
+            licenseKey: 'non-commercial-and-evaluation' // for non-commercial use only
+        });
+        })
 });

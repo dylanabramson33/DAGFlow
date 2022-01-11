@@ -1,5 +1,6 @@
-import defaults from './NodeDefaults.js';
+import {Defaults,FuncToSource} from './NodeDefaults.js';
 import nodeManager from './NodeManager.js';
+
 
 function checkCanConnect(outputParamTypes,inputParamTypes){
   return inputParamTypes.includes(outputParamTypes[0]);
@@ -124,31 +125,42 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
   document.addEventListener("keydown", event => {
+    if(event.target.nodeName.toLowerCase() === 'input'){
+      return;
+    }
     if(event.key === 'Backspace') {
       cy.remove('node:selected');
       cy.remove('edge:selected');
     }
   }
   );
-
+  eh.enable();
+  
   document.addEventListener("keydown", event => {
-    if(event.key == "e")
-      drawModeEnabled = !drawModeEnabled;
-      if(drawModeEnabled) {
-        eh.enable();
-        eh.enableDrawMode();
-      }
-      else {
-        eh.disable();
-        eh.disableDrawMode();
-      }
+    if(event.target.nodeName.toLowerCase() === 'input'){
+      return;
     }
-  );
+    if(event.key == "e"){
+      drawModeEnabled = !drawModeEnabled;
+    }
+      
+    if(drawModeEnabled) {
+      eh.enableDrawMode();
+    }
+    else {
+      eh.disableDrawMode();
+    }
+  });
   
   cy.on('tap', function(event) {
     var evtTargetData = event.target.data();
     if(evtTargetData.hasOwnProperty('id')){
       nodeManager.changeCurrent(evtTargetData.id,evtTargetData.name);
+      var editor = document.getElementById("editor");
+      editor.style.display = 'block';
+      const source = nodeManager.getNodeSource(evtTargetData.name);
+      var editor = ace.edit("editor");
+      editor.setValue(source,-1);
     }
 
   });
@@ -156,6 +168,17 @@ document.addEventListener('DOMContentLoaded', function(){
   var idGen = 0;
   function addNode(event){
     const nodeType = event.target.value;
+    const nodeObj = { group: 'nodes',
+      data: { id: idGen, name: nodeType},
+      position: { x: 200, y: 200 },
+    }
+    cy.add(nodeObj);
+    nodeManager.changeCurrent(idGen,nodeType);
+    idGen += 1;
+  }
+
+  function addBaseNode(){
+    const nodeType = 'new_node'.concat(idGen.toString());
     const nodeObj = { group: 'nodes',
       data: { id: idGen, name: nodeType},
       position: { x: 200, y: 200 },
@@ -176,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const outputType = nodeManager.getOutputTypes(sourceID);
     nodeManager.setInputTypeToVal(targetID,outputType,sourceID);
+
   });
   cy.on('remove','edge',function(edge) {
     let sourceID = edge.target.data().source;
@@ -192,15 +216,26 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.sideButton').forEach(item => {
     item.addEventListener('click',addNode);
   });
-
-  
-
+  document.getElementById('addNode').addEventListener('click',function(){
+    addBaseNode();
+  });
+  document.getElementById('graphButton').addEventListener('click',function(){
+    document.getElementById('graphView').style.display = 'block';
+    document.getElementById('dataView').style.display = 'none';
+  });
+  document.getElementById('dataButton').addEventListener('click',function(){
+    document.getElementById('graphView').style.display = 'none';
+    document.getElementById('dataView').style.display = 'block';
+  });
 });
 
 document.addEventListener('addDefaults', function (e) {  
-  defaults.addDefaults(e.detail);
+  Defaults.addDefaults(e.detail);
 }, false);
 
+document.addEventListener('addFuncToSource', function (e) {  
+  FuncToSource.addFuncToSource(e.detail);
+}, false);
 
 
 

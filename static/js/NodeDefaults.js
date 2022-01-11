@@ -7,6 +7,17 @@ class NodeDefaults {
     }
 }
 
-let defaults = new NodeDefaults()
+class NodeFuncToSource {
+    constructor(){
+        this.funcToSource = {};
+    }
+    addFuncToSource(funcToSource){
+        Object.assign(this.funcToSource,funcToSource);
+    }
+}
 
-export default defaults;
+let defaults = new NodeDefaults();
+let funcToSource = new NodeFuncToSource();
+
+export const Defaults = defaults;
+export const FuncToSource = funcToSource;

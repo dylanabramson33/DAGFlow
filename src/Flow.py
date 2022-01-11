@@ -35,7 +35,6 @@ class Flow():
                 else:
                     altered_args.append(arg)
             
-           
             current_comp = current_op(*altered_args,**current_kwargs)
             
             if node_data[index]._node_tag != None:
